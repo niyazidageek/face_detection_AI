@@ -2,16 +2,19 @@ import cv2
 
 trained_data = cv2.CascadeClassifier('data/frontal_faces.xml')
 
-img = cv2.imread('data/istockphoto-805012064-170667a.jpeg')
+webcam = cv2.VideoCapture(0)
 
-gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+while True:
+    successful_frame_read, frame = webcam.read()
+    gray_img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    face_coordinates = trained_data.detectMultiScale(gray_img)
+    for face in face_coordinates:
+        (x, y, w, h) = face
+        cv2.rectangle(frame, (x, y), (w + x, h + y), (0, 255, 0), 2)
+    cv2.imshow('slam', frame)
+    key = cv2.waitKey(1)
 
-face_coordinates = trained_data.detectMultiScale(gray_img)
+    if key == 81 or key == 113:
+        break
 
-for face in face_coordinates:
-    (x, y, w, h) = face
-    cv2.rectangle(img, (x, y), (w + x, h + y), (0, 255, 0), 2)
-
-cv2.imshow('detected_face', img)
-
-cv2.waitKey()
+webcam.release()
